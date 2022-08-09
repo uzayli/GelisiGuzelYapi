@@ -1,4 +1,4 @@
-﻿namespace VeriYapilari
+namespace VeriYapilari
 {
     /// <summary>
     /// Bu Sınıf Dizilerden Gelişi Güzel Elemanı almak için oluşturulmuştur.
@@ -11,7 +11,7 @@
         Verilerin tutulduğu Değişken
          */
 
-        public int Sayi { get {return Veriler.Count; ; } private set {; } }
+        public int Sayi { get { return Veriler.Count; ; } private set {; } }
         //Kaç tane değer olduğunu döndürmeye yarayan değişken
         #endregion
 
@@ -51,9 +51,8 @@
         //Gelişi güzel bir elemanı silerek onu gönderen fonksiyon
         public Tur Getir()
         {
-            System.Random ran = new System.Random();
-            //Gelişi güzel sayı almak için random sınıfını kullanıyoruz
-            int gonderilecek = ran.Next(0,Veriler.Count-1);
+            //Gelişi güzel sayı almak için GuvenliGelisiGuzelSayiOlustur fonksiyonunu kullanıyoruz
+            int gonderilecek = GuvenliGelisiGuzelSayiOlustur(0, Veriler.Count - 1);
             //Verilerden birini almak istediğimizden Verileri tamamını alabileceğimiz şekilde
             //gelişi güzel bir sayı aldık 
             System.Collections.Generic.HashSet<Tur>.Enumerator eVeriler = Veriler.GetEnumerator();
@@ -62,7 +61,7 @@
             for (int i = 0; i <= gonderilecek; i++) /*Gonderilecek sayı kadar sırayla gidiyoruz çünkü dizi olmadığı için 
                 doğrudan gidemiyoruz*/
             {
-                if(i==gonderilecek) /*Eğer gönderilecek sayı i'ye eşitse istediğimiz yere 
+                if (i == gonderilecek) /*Eğer gönderilecek sayı i'ye eşitse istediğimiz yere 
                     Gelmişiz demektir. buradan veriyi silip geri göndereceğiz*/
                 {
                     Veriler.Remove(eVeriler.Current);//eVeriler'in şuandaki elemanı veriler'den siliyoruz
@@ -83,11 +82,10 @@
             KadarDÖngüye oluşturulmasıyla tüm değerleri silmeden gönderen
             fonksiyon  
             */
-            System.Random ran = new System.Random();
             Tur[] Karisik = new Tur[Veriler.Count];
             for (int i = 0; i < Karisik.Length; i++)
             {
-                int gonderilecek = ran.Next(0, Veriler.Count - 1);
+                int gonderilecek = GuvenliGelisiGuzelSayiOlustur(0, Veriler.Count - 1);
                 System.Collections.Generic.HashSet<Tur>.Enumerator eVeriler = Veriler.GetEnumerator();
                 eVeriler.MoveNext();
                 for (int j = 0; j <= gonderilecek; j++)
@@ -142,5 +140,25 @@
             this.Veriler.Clear();
         }
         #endregion
+
+        //Güvenilir bir şekilde gelişi güzel veri oluşturmak için RNGCryptoServiceProvider sınıfı kullanıldı.
+        private int GuvenliGelisiGuzelSayiOlustur(int enDusukDeger, int enYuksekDeger)
+        {
+            if (enDusukDeger == enYuksekDeger)
+                return enDusukDeger;
+            System.Security.Cryptography.RNGCryptoServiceProvider csp = new System.Security.Cryptography.RNGCryptoServiceProvider();
+
+            long diff = (long)enYuksekDeger - enDusukDeger;
+            long upperBound = uint.MaxValue / diff * diff;
+
+            uint ui;
+            do
+            {
+                byte[] gelisiGuzelbytelar = new byte[sizeof(uint)];
+                csp.GetBytes(gelisiGuzelbytelar);
+                ui  = System.BitConverter.ToUInt32(gelisiGuzelbytelar, 0);
+            } while (ui >= upperBound);
+            return (int)(enDusukDeger + (ui % diff));
+        }
     }
 }
