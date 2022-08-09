@@ -158,7 +158,7 @@ namespace VeriYapilari
                 csp.GetBytes(gelisiGuzelbytelar);
                 ui  = System.BitConverter.ToUInt32(gelisiGuzelbytelar, 0);
             } while (ui >= upperBound);
-            return (int)(enDusukDeger + (ui % diff));
+            return (int)(enDusukDeger + (ui % diff + 1));
         }
     }
 }
